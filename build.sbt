@@ -7,7 +7,7 @@ ThisBuild / organization     := "edu.duke.cs.apex"
 
 val chiselVersion = "3.5.6"
 
-lazy val root = (project in file("."))
+lazy val chipkit = (project in file("."))
   .settings(
     name := "chipkit",
     libraryDependencies ++= Seq(
