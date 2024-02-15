@@ -20,7 +20,7 @@ class AHBMasterMux(ahbbp: AHBBundleParameters, nDevices: Int) extends BlackBox(
     val M1 = new AHBSlaveBundle(ahbbp)
     val M2 = new AHBSlaveBundle(ahbbp)
     val M3 = new AHBSlaveBundle(ahbbp)
-    val MOUT = new AHBMasterBundle(ahbbp)
+    val MOUT = Flipped(new AHBSlaveBundle(ahbbp))
 
     val HCLK = Input(Clock())
     val HRESETn = Input(Reset())

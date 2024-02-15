@@ -9,11 +9,17 @@ import protocol._
 
 class LazyComm(implicit p: Parameters) extends LazyModule {
 
-  def module: LazyModuleImpLike = new LazyCommImpl(this)
+  lazy val module = new LazyCommImpl(this)
 
-  val M = AHBMasterSourceNode(Seq(AHBMasterPortParameters(
+  val M = AHBSlaveSourceNode(Seq(AHBMasterPortParameters(
     masters = Seq(AHBMasterParameters("CommAHBMaster"))
   )))
+}
+
+class PROM_UART extends Bundle {
+  val uart_rxd = Input(Bool())
+  val uart_txd = Output(Bool())
+  val program_uart_rxd = Input(Bool())
 }
 
 class LazyCommImpl(outer: LazyComm) extends LazyModuleImp(outer) {
@@ -23,13 +29,16 @@ class LazyCommImpl(outer: LazyComm) extends LazyModuleImp(outer) {
 
   val sm = Module(new COMMCTRL)
 
+  sm.io.clk := clock
+  sm.io.rstn := !reset.asBool
+
   top.elements foreach { case (name, dat) =>
     if (sm.io.elements.contains(name))
       dat <> sm.io.elements(name)
   }
 
   hm_sel := sm.io.HMSEL
-  val ahb = outer.M.in(0)._1
+  val ahb = outer.M.out(0)._1
   sm.io.M_HRDATA := ahb.hrdata
   sm.io.M_HREADY := ahb.hready
   sm.io.M_HRESP := ahb.hresp
