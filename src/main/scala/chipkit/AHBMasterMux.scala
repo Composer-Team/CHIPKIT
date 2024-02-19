@@ -1,10 +1,12 @@
 package chipkit
 
+import chipkit.wrappers.AHB_MASTER_MUX
 import chipsalliance.rocketchip.config.Parameters
 import chisel3._
 import freechips.rocketchip.amba.ahb._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.util.BundleField
+import protocol.AHBBasicSlaveBundle
 
 class AHBMasterMux(nDevices: Int)(implicit p: Parameters) extends LazyModule {
   // Combine multiple Slaves into one logical Slave (suitable to attach to an Arbiter)
@@ -37,7 +39,7 @@ class AHBMasterMux(nDevices: Int)(implicit p: Parameters) extends LazyModule {
 
   override def module: LazyModuleImp = new LazyModuleImp(this) {
 
-    val sm = Module(new wrappers.AHBMasterMux(node.in(0)._1.params, nDevices))
+    val sm = Module(new AHB_MASTER_MUX(node.in(0)._1.params, nDevices))
 
     val HCLK = IO(Input(Bool()))
     val HMSEL = IO(Input(UInt(2.W)))
@@ -52,7 +54,10 @@ class AHBMasterMux(nDevices: Int)(implicit p: Parameters) extends LazyModule {
 
     node.in.zipWithIndex foreach { case (io, idx) =>
       io._1.elements foreach { case (name, dat) =>
-        sm.io.elements(f"M${idx}").asInstanceOf[AHBSlaveBundle].elements(name.toLowerCase) <> dat
+        sm.io.elements(f"M${idx}").asInstanceOf[AHBBasicSlaveBundle].elements.get(name.toUpperCase()) match {
+          case Some(d) => dat <> d
+          case None => dat := DontCare
+        }
       }
     }
 
@@ -66,7 +71,10 @@ class AHBMasterMux(nDevices: Int)(implicit p: Parameters) extends LazyModule {
 //    }
 
     node.out(0)._1.elements.foreach { case (name, dat) =>
-      dat <> sm.io.elements(f"MOUT").asInstanceOf[AHBSlaveBundle].elements(name.toLowerCase)
+      sm.io.elements(f"MOUT").asInstanceOf[AHBBasicSlaveBundle].elements.get(name.toUpperCase()) match {
+        case Some(d) => d <> dat
+        case None => dat := DontCare
+      }
     }
   }
 }

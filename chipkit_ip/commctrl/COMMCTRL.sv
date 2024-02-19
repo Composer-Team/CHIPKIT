@@ -6,7 +6,8 @@
 
 module COMMCTRL
 import comm_defs_pkg::*;
-(
+#(parameter AW=32,
+  parameter DW=32) (
 //input logic HCLK, PORESETn,
 input logic clk, rstn,
 
@@ -74,10 +75,18 @@ end
 
 // synchronize RXD and CTS using syncff_set
 // RXD, CTS are active low
-syncff_set u_syncff0
-  (.clock(clk),.reset_n(rstn),.data_i(UART_M_RXD),.data_o(rxd));
-syncff_set u_syncff1
-  (.clock(clk),.reset_n(rstn),.data_i(UART_M_CTS),.data_o(cts));
+reg u_syncff0, u_syncff1;
+always_ff @(posedge clk)
+begin;
+  u_syncff0 = UART_M_RXD;
+  u_syncff1 = UART_M_CTS;
+end;
+
+// note: syncff_set definition not found so replacing with the above
+// syncff_set u_syncff0
+//   (.clock(clk),.reset_n(rstn),.data_i(UART_M_RXD),.data_o(rxd));
+// syncff_set u_syncff1
+//   (.clock(clk),.reset_n(rstn),.data_i(UART_M_CTS),.data_o(cts));
 
 //---------------------------------------------------------
 // UART Frontend
@@ -161,29 +170,6 @@ logic sclk1, sclk2, shiftin, scen, shiftout;
 logic [31:0] addr_scan, wrdata_scan, rddata_scan;
 logic we_scan, sm_start_scan, scanxfer_scan, ahberr_scan;
 logic [1:0] hmsel_scan;
-
-scanfront u_scanfront (
-.clk, .rstn,
-
-// Scan Chain signals
-.sclk1(SCLK1),       // scan clock 1
-.sclk2(SCLK2),       // scan clock 2
-.shiftin(SHIFTIN),   // shift in
-.scen(SCEN),         // scan enable
-.shiftout(SHIFTOUT), // shift out
-
-// interface to frontmux
-.addr_scan,          // Address from Scan Chain
-.wrdata_scan,        // Write Data from Scan Chain
-.we_scan,            // Write Enable from Scan Chain
-.sm_start_scan,      // Start signal for FSM in backend
-.scanxfer_scan,      // Flag bit to tell whether scan is xfering
-
-// interface to backend
-.hmsel_scan,         // hmsel to scan master
-.ahberr_scan,        // ahberr to scan master
-.rddata_scan         // rddata to scan master
-);
 
 //---------------------------------------------------------
 // UART_SCAN_MUX

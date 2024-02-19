@@ -5,13 +5,16 @@
 // - Add assertions.
 // - Add an option to have it self-arbitrating (or make this another module).
 
+`include "RTL.svh"
 
 module AHB_MASTER_MUX
 #(
   parameter M0_ENABLE = 1'b1,
   parameter M1_ENABLE = 1'b1,
   parameter M2_ENABLE = 1'b1,
-  parameter M3_ENABLE = 1'b1
+  parameter M3_ENABLE = 1'b1,
+  parameter AW=32,
+  parameter DW=32
 ) (
   input logic HCLK, HRESETn,
   input logic [1:0] HMSEL,
@@ -67,7 +70,7 @@ module AHB_MASTER_MUX
   output [DW-1:0] MOUT_HWDATA,
   // Transfer Response & Read Data
   input [DW-1:0] MOUT_HRDATA,
-  input MOUT_HRESP,
+  input MOUT_HRESP
 );
 
 // Use bus clock only in this module
@@ -120,7 +123,7 @@ endgenerate
 
 // Transaction done when HREADY goes high
 logic trans_done;
-always_comb trans_done = MOUT.HREADY;
+always_comb trans_done = MOUT_HREADY;
 
 // Sample incoming mux value
 logic [1:0] hmsel_aphase, hmsel_dphase;
@@ -141,29 +144,29 @@ always_comb HMASTER[1:0] = hmsel_aphase[1:0];
 // If a master does is not granted, stall with HREADY
 // otherwise, give the real HREADY from slave
 always_comb begin
-m0_hready = (hmsel_aphase[1:0] == 2'b00) ? MOUT.HREADY : 1'b0;
-m1_hready = (hmsel_aphase[1:0] == 2'b01) ? MOUT.HREADY : 1'b0;
-m2_hready = (hmsel_aphase[1:0] == 2'b10) ? MOUT.HREADY : 1'b0;
-m3_hready = (hmsel_aphase[1:0] == 2'b11) ? MOUT.HREADY : 1'b0;
+m0_hready = (hmsel_aphase[1:0] == 2'b00) ? MOUT_HREADY : 1'b0;
+m1_hready = (hmsel_aphase[1:0] == 2'b01) ? MOUT_HREADY : 1'b0;
+m2_hready = (hmsel_aphase[1:0] == 2'b10) ? MOUT_HREADY : 1'b0;
+m3_hready = (hmsel_aphase[1:0] == 2'b11) ? MOUT_HREADY : 1'b0;
 end
 
 // Address phase signals (master -> slave)
 always_comb 
 case(hmsel_aphase[1:0])
   2'h0 : // M0
-  {MOUT.HTRANS[1:0],MOUT.HWRITE,MOUT.HSIZE[2:0],MOUT.HADDR[31:0]} =
+  {MOUT_HTRANS[1:0],MOUT_HWRITE,MOUT_HSIZE[2:0],MOUT_HADDR[31:0]} =
   {M0_HTRANS[1:0],M0_HWRITE,M0_HSIZE[2:0],M0_HADDR[31:0]};
   2'h1 : // M1
-  {MOUT.HTRANS[1:0],MOUT.HWRITE,MOUT.HSIZE[2:0],MOUT.HADDR[31:0]} =
+  {MOUT_HTRANS[1:0],MOUT_HWRITE,MOUT_HSIZE[2:0],MOUT_HADDR[31:0]} =
   {M1_HTRANS[1:0],M1_HWRITE,M1_HSIZE[2:0],M1_HADDR[31:0]};
   2'h2 : // M2
-  {MOUT.HTRANS[1:0],MOUT.HWRITE,MOUT.HSIZE[2:0],MOUT.HADDR[31:0]} =
+  {MOUT_HTRANS[1:0],MOUT_HWRITE,MOUT_HSIZE[2:0],MOUT_HADDR[31:0]} =
   {M2_HTRANS[1:0],M2_HWRITE,M2_HSIZE[2:0],M2_HADDR[31:0]};
   2'h3 : // M3
-  {MOUT.HTRANS[1:0],MOUT.HWRITE,MOUT.HSIZE[2:0],MOUT.HADDR[31:0]} =
+  {MOUT_HTRANS[1:0],MOUT_HWRITE,MOUT_HSIZE[2:0],MOUT_HADDR[31:0]} =
   {M3_HTRANS[1:0],M3_HWRITE,M3_HSIZE[2:0],M3_HADDR[31:0]};
   default : // M0
-  {MOUT.HTRANS[1:0],MOUT.HWRITE,MOUT.HSIZE[2:0],MOUT.HADDR[31:0]} =
+  {MOUT_HTRANS[1:0],MOUT_HWRITE,MOUT_HSIZE[2:0],MOUT_HADDR[31:0]} =
   {M0_HTRANS[1:0],M0_HWRITE,M0_HSIZE[2:0],M0_HADDR[31:0]};
 endcase
 
@@ -173,20 +176,20 @@ endcase
 
 // Data phase signals (slave -> master)
 always_comb begin
-  {m0_hresp, m0_hrdata[31:0]} = {MOUT.HRESP, MOUT.HRDATA[31:0]};
-  {m1_hresp, m1_hrdata[31:0]} = {MOUT.HRESP, MOUT.HRDATA[31:0]};
-  {m2_hresp, m2_hrdata[31:0]} = {MOUT.HRESP, MOUT.HRDATA[31:0]};
-  {m3_hresp, m3_hrdata[31:0]} = {MOUT.HRESP, MOUT.HRDATA[31:0]};
+  {m0_hresp, m0_hrdata[31:0]} = {MOUT_HRESP, MOUT_HRDATA[31:0]};
+  {m1_hresp, m1_hrdata[31:0]} = {MOUT_HRESP, MOUT_HRDATA[31:0]};
+  {m2_hresp, m2_hrdata[31:0]} = {MOUT_HRESP, MOUT_HRDATA[31:0]};
+  {m3_hresp, m3_hrdata[31:0]} = {MOUT_HRESP, MOUT_HRDATA[31:0]};
 end
 
 // Data phase signals (master -> slave)
 always_comb
 case(hmsel_dphase[1:0])
-  2'h0 : MOUT.HWDATA[31:0] = M0_HWDATA[31:0];
-  2'h1 : MOUT.HWDATA[31:0] = M1_HWDATA[31:0];
-  2'h2 : MOUT.HWDATA[31:0] = M2_HWDATA[31:0];
-  2'h3 : MOUT.HWDATA[31:0] = M3_HWDATA[31:0];
-  default : MOUT.HWDATA[31:0] = M0_HWDATA[31:0]; 
+  2'h0 : MOUT_HWDATA[31:0] = M0_HWDATA[31:0];
+  2'h1 : MOUT_HWDATA[31:0] = M1_HWDATA[31:0];
+  2'h2 : MOUT_HWDATA[31:0] = M2_HWDATA[31:0];
+  2'h3 : MOUT_HWDATA[31:0] = M3_HWDATA[31:0];
+  default : MOUT_HWDATA[31:0] = M0_HWDATA[31:0]; 
 endcase
 
 
