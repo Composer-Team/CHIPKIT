@@ -2,7 +2,7 @@
 // See README.md for license details.
 
 ThisBuild / scalaVersion     := "2.13.10"
-ThisBuild / version          := "0.0.0"
+ThisBuild / version          := "0.0.3"
 ThisBuild / organization     := "edu.duke.cs.apex"
 
 val chiselVersion = "3.5.6"

@@ -39,7 +39,7 @@ class AHBMasterMux(nDevices: Int)(implicit p: Parameters) extends LazyModule {
 
   override def module: LazyModuleImp = new LazyModuleImp(this) {
 
-    val sm = Module(new AHB_MASTER_MUX(node.in(0)._1.params, nDevices))
+    val sm = Module(new AHB_MASTER_MUX(node.in(0)._1.params.copy(addrBits = 32), nDevices))
 
     val HCLK = IO(Input(Bool()))
     val HMSEL = IO(Input(UInt(2.W)))
@@ -61,21 +61,19 @@ class AHBMasterMux(nDevices: Int)(implicit p: Parameters) extends LazyModule {
       }
     }
 
-//    (node.in.length until 4) foreach { case idx =>
-//      sm.io.elements foreach { case (name, dat) =>
-//        if (name.substring(0, 3).equals(f"M${idx}_")) {
-//          dat <> DontCare
-//        }
-//      }
-
-//    }
-
-    node.out(0)._1.elements.foreach { case (name, dat) =>
-      sm.io.elements(f"MOUT").asInstanceOf[AHBBasicSlaveBundle].elements.get(name.toUpperCase()) match {
-        case Some(d) => d <> dat
-        case None => dat := DontCare
-      }
-    }
+    val on = node.out(0)._1
+    // Master goes nowhere...
+    on.haddr <> sm.io.MOUT.HADDR
+    on.hready <> sm.io.MOUT.HREADY
+    on.hresp <> sm.io.MOUT.HRESP
+    on.hsize <> sm.io.MOUT.HSIZE
+    on.hsel := true.B
+    dontTouch(on.hsel)
+    dontTouch(on)
+    sm.io.MOUT.HTRANS <> on.htrans
+    sm.io.MOUT.HWRITE <> on.hwrite
+    sm.io.MOUT.HRDATA <> on.hrdata
+    sm.io.MOUT.HWDATA <> on.hwdata
   }
 }
 
