@@ -71,6 +71,8 @@ baud_sel = UART_M_BAUD_SEL[3:0];
 HMSEL[1:0] = hmsel;
 UART_M_TXD = txd;
 UART_M_RTS = rts;
+rxd = UART_M_RXD;
+cts = UART_M_CTS;
 end
 
 // synchronize RXD and CTS using syncff_set
@@ -146,7 +148,7 @@ logic we_uart, sm_start_uart;
 logic decode_err_uart;
 logic [15:0] err_code_uart;
 
-decoder u_decoder(
+decoder_dense u_decoder(
 .clk, .rstn,
 
 // interface to uartfront

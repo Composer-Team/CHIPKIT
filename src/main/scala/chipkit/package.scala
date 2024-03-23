@@ -1,6 +1,5 @@
 package object chipkit {
   def init_ip_repo(): Unit = {
-    if (os.exists(os.pwd / "chipkit_ip")) return
     os.write.over(os.pwd / "ip.tgz", (os.resource / "ip.tgz").toSource)
     os.proc(Seq("tar", "-xzf", (os.pwd / "ip.tgz").toString())).call(cwd = os.pwd)
   }
@@ -14,7 +13,7 @@ package object chipkit {
     "ahb/AHB_MEM.sv",
     "commctrl/backend.sv",
     "commctrl/baudmux.sv",
-    "commctrl/decoder.sv",
+    "commctrl/decoder_dense.sv",
     "commctrl/frontmux.sv",
     "commctrl/level_to_pulse.sv",
     "commctrl/scanfront.sv",

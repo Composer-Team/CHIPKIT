@@ -20,7 +20,21 @@ localparam WIDTH_BAUD_DIV = 12;
 localparam WIDTH_BAUD_SEL = 4;
 
 // Instruction Buffer
-localparam IBUF_SZ = 25; // in Bytes
+// localparam IBUF_SZ = 25; // in Bytes
+// sending over the ASCII hex is inefficient. Sending separators doesn't seem
+// to make sense either. Especially in simulation, this would take forever.
+// for addresses and data fields, send over binary encoding (2x more efficient)
+// and skip separators
+// name      |     valid values    |       byte range
+// command   |     'r'/'R'/'w'/'W' |         [0:0]
+// addr      |  binary             |         [4:1]
+// data      |  binary             |         [8:5]
+// handshake |     'CR'            |         [9:9]
+// handshake |     'LF'            |         [10:10]
+//
+// NOTE: for multi-byte values, send in low-order bytes first!
+// NOTE: data can be elided for read command, making handshake happen at [6:5]
+localparam IBUF_SZ = 10;
 localparam IBUF_DW = 8;
 localparam IBUF_AW = 5;
 
@@ -32,7 +46,7 @@ localparam EBUF_AW = 4; // Address bits
 
 //////////////////////////////////
 // Parameters for ASCII code
-//////////////////////////////////
+/////////////////////////////////
 localparam ASCII_W = 8'h57;
 localparam ASCII_w = 8'h77;
 localparam ASCII_R = 8'h52;

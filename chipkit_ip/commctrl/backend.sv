@@ -308,37 +308,29 @@ always_comb rddata_scan_nxt = (scanxfer) ? 32'd0 :
 //---------------------------------------------------------
 // Store hrdata into hrdatabuf
 // eg. "HRDATA: 0x12341234"
-logic [19:0][7:0] hrdatabuf, hrdatabuf_nxt;
+logic [6:0][7:0] hrdatabuf, hrdatabuf_nxt;
 `FF(hrdatabuf_nxt,hrdatabuf,clk,rd_done,rstn,'0);
 always_comb begin
-hrdatabuf_nxt[5:0] = HRDATA_STR;                  // HRDATA
-hrdatabuf_nxt[6]   = ASCII_COLON;                 // :
-hrdatabuf_nxt[7]   = ASCII_SPACE;                 // (space)
-hrdatabuf_nxt[8]   = ASCII_0;                     // 0
-hrdatabuf_nxt[9]   = ASCII_x;                     // x
-hrdatabuf_nxt[10]  = num_to_ascii(rddata[31:28]); // rddata_7
-hrdatabuf_nxt[11]  = num_to_ascii(rddata[27:24]); // rddata_6
-hrdatabuf_nxt[12]  = num_to_ascii(rddata[23:20]); // rddata_5
-hrdatabuf_nxt[13]  = num_to_ascii(rddata[19:16]); // rddata_4
-hrdatabuf_nxt[14]  = num_to_ascii(rddata[15:12]); // rddata_3
-hrdatabuf_nxt[15]  = num_to_ascii(rddata[11: 8]); // rddata_2
-hrdatabuf_nxt[16]  = num_to_ascii(rddata[7 : 4]); // rddata_1
-hrdatabuf_nxt[17]  = num_to_ascii(rddata[3 : 0]); // rddata_0
-hrdatabuf_nxt[18]  = ASCII_CR;                    // CR
-hrdatabuf_nxt[19]  = ASCII_LF;                    // LF
+hrdatabuf_nxt[0]  = ASCII_x;
+hrdatabuf_nxt[1]  = rddata[31:24]; // rddata_7
+hrdatabuf_nxt[2]  = rddata[23:16]; // rddata_6
+hrdatabuf_nxt[3]  = rddata[15:8];  // rddata_5
+hrdatabuf_nxt[4]  = rddata[7:0];   // rddata_4
+hrdatabuf_nxt[5]  = ASCII_CR;      // CR
+hrdatabuf_nxt[6]  = ASCII_LF;      // LF
 end
 
 // hrdatabuf transaction
 logic hrdatabuf_done, hrdatabuf_done_nxt;
 logic hrdatabuf_out,  hrdatabuf_out_nxt;
-logic [4:0] hrdatabuf_cnt, hrdatabuf_cnt_nxt;
+logic [2:0] hrdatabuf_cnt, hrdatabuf_cnt_nxt;
 
 always_comb begin
 hrdatabuf_out_nxt  = (sm_readout&&(!echo_out));
-hrdatabuf_done_nxt = (hrdatabuf_cnt==5'd20) ? 1'b1 : 1'b0;
-hrdatabuf_cnt_nxt  = (!hrdatabuf_out) ? 5'd0 :
-                     (tx_work&&(!hrdatabuf_done)) ? hrdatabuf_cnt+5'd1 :
-                     (hrdatabuf_done) ? 5'd0 : hrdatabuf_cnt;
+hrdatabuf_done_nxt = (hrdatabuf_cnt==3'd7) ? 1'b1 : 1'b0;
+hrdatabuf_cnt_nxt  = (!hrdatabuf_out) ? 3'd0 :
+                     (tx_work&&(!hrdatabuf_done)) ? hrdatabuf_cnt+3'd1 :
+                     (hrdatabuf_done) ? 3'd0 : hrdatabuf_cnt;
 end
 
 `FF(hrdatabuf_out_nxt,hrdatabuf_out,clk,1'b1,rstn,1'b0);

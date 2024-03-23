@@ -19,7 +19,6 @@ class LazyComm(implicit p: Parameters) extends LazyModule {
 class PROM_UART extends Bundle {
   val uart_rxd = Input(Bool())
   val uart_txd = Output(Bool())
-  val program_uart_rxd = Input(Bool())
 }
 
 class LazyCommImpl(outer: LazyComm) extends LazyModuleImp(outer) {
@@ -47,4 +46,8 @@ class LazyCommImpl(outer: LazyComm) extends LazyModuleImp(outer) {
   ahb.hwrite := sm.io.M_HWRITE
   ahb.htrans := sm.io.M_HTRANS
   ahb.hsize := sm.io.M_HSIZE
+
+  ahb.hsel := ahb.htrans =/= 0.U
+  ahb.hready := true.B
+  sm.io.M_HREADY := true.B
 }

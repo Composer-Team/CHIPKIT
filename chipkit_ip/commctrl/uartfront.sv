@@ -158,7 +158,7 @@ always_comb ibuf_nxt =
 // when a transaction is done (sm_done), reset it to zero
 logic [IBUF_AW-1:0] ibuf_cnt, ibuf_cnt_nxt;
 always_comb ibuf_cnt_nxt =
-    (ibuf_update) ? ibuf_cnt+1 :
+    (ibuf_update) ? ibuf_cnt+1'b1 :
     (sm_done) ? 0 : ibuf_cnt;
 `FF(ibuf_cnt_nxt,ibuf_cnt,clk,1'b1,rstn,'0);
 
