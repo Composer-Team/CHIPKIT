@@ -24,8 +24,10 @@ class ChipKitPlatform(m0generator: Parameters => M0Abstract,
   override val memoryNChannels: Int = 1
   override val memoryControllerIDBits: Int = 4
   override val memoryControllerBeatBytes: Int = 4
-
   override val memoryCompiler: MemoryCompiler = technologyLibrary.memoryCompiler
+  override val defaultReadTXConcurrency: Int = 1
+  override val defaultWriteTXConcurrency: Int = 1
+  override val prefetchSourceMultiplicity: Int = 4
 
   override def postProcessorMacro(c: Config, paths: Seq[Path]): Unit = technologyLibrary.postProcessorMacro(c, paths)
 }

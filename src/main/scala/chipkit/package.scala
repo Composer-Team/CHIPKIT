@@ -9,7 +9,7 @@ package object chipkit {
     "commctrl/comm_defs_pkg.sv",
     "ahb/ahb_intf.sv",
     "ahb/AHB_BUS.sv",
-    "ahb/AHB_MASTER_MUX.sv",
+//    "ahb/AHB_MASTER_MUX.sv",
     "ahb/AHB_MEM.sv",
     "commctrl/backend.sv",
     "commctrl/baudmux.sv",
@@ -18,7 +18,7 @@ package object chipkit {
     "commctrl/level_to_pulse.sv",
     "commctrl/scanfront.sv",
     "commctrl/uart.sv",
-    "commctrl/uart_intf.sv",
+//    "commctrl/uart_intf.sv",
     "commctrl/uartfront.sv",
     "commctrl/COMMCTRL.sv"
   ).map(a => os.pwd / "chipkit_ip" / os.RelPath(a))

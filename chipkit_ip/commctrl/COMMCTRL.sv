@@ -2,7 +2,6 @@
 // HKL 01 2016
 
 `include "RTL.svh"
-`include "comm_defs_pkg.sv"
 
 module COMMCTRL
 import comm_defs_pkg::*;
@@ -51,16 +50,15 @@ logic [31:0] haddr, hwdata, hrdata;
 logic [2:0] hsize;
 logic [1:0] htrans;
 logic hwrite, hresp, hready;
-always_comb begin
-hrdata = M_HRDATA[31:0];
-hready = M_HREADY;
-hresp  = M_HRESP;
-M_HWDATA = hwdata[31:0];
-M_HADDR  = haddr[31:0];
-M_HWRITE = hwrite;
-M_HTRANS = htrans[1:0];
-M_HSIZE  = hsize[2:0];
-end
+
+assign hrdata = M_HRDATA[31:0];
+assign hready = M_HREADY;
+assign hresp  = M_HRESP;
+assign M_HWDATA = hwdata[31:0];
+assign M_HADDR  = haddr[31:0];
+assign M_HWRITE = hwrite;
+assign M_HTRANS = htrans[1:0];
+assign M_HSIZE  = hsize[2:0];
 
 // COMM Controller
 logic [3:0] baud_sel;
