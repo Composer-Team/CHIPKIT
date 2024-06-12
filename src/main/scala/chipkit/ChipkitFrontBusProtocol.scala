@@ -2,8 +2,8 @@ package chipkit
 
 import chipsalliance.rocketchip.config.Parameters
 import chisel3.{Bool, Clock, IO, Input, Reset}
-import composer.Generation.ComposerBuild
-import composer.Protocol.FrontBus.FrontBusProtocol
+import beethoven.Generation.BeethovenBuild
+import beethoven.Protocol.FrontBus.FrontBusProtocol
 import freechips.rocketchip.amba.ahb.AHBToTL
 import freechips.rocketchip.diplomacy.LazyModule
 import freechips.rocketchip.tilelink.TLIdentityNode
@@ -16,7 +16,7 @@ class ChipkitFrontBusProtocol(generator: Parameters => M0Abstract) extends Front
    * stdio uarts for the ARM core
    */
   override def deriveTopIOs(tlChainObj: Any, withClock: Clock, withActiveHighReset: Reset)(implicit p: Parameters): Unit = {
-    chipkit.sources foreach ComposerBuild.addSource
+    chipkit.sources foreach BeethovenBuild.addSource
     val CHIP = IO(new COMMTopIO)
     val STDUART = IO(new PROM_UART)
     val CHIP_ASPSEL = IO(Input(Bool()))

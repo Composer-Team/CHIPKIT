@@ -1,8 +1,8 @@
 package chipkit
 
-import composer.Platforms.PlatformType.PlatformType
-import composer.Platforms.{Platform, PlatformType}
-import composer.Protocol.FrontBus.{AXIFrontBusProtocol, FrontBusProtocol}
+import beethoven.Platforms.PlatformType.PlatformType
+import beethoven.Platforms.{Platform, PlatformType}
+import beethoven.Protocol.FrontBus.{AXIFrontBusProtocol, FrontBusProtocol}
 
 class SimPlatform(override val clockRateMHz: Int) extends Platform {
   override val platformType: PlatformType = PlatformType.FPGA
@@ -10,7 +10,7 @@ class SimPlatform(override val clockRateMHz: Int) extends Platform {
   /**
    * The front bus is the MMIO bus that the host uses to access accelerator cores. Most parameters are
    * self-explanatory except for some platforms (usually heavily resource constrained ones), the host
-   * may access memory directly through Composer. This adds some latency but is not the primary concern
+   * may access memory directly through beethoven. This adds some latency but is not the primary concern
    * on such systems.
    */
   override val frontBusBaseAddress: Long = 0x0

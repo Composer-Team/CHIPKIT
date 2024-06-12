@@ -10,7 +10,7 @@ import comm_defs_pkg::*;
 //input logic HCLK, PORESETn,
 input logic clk, rstn,
 
-// unfold AHB interface so we can interface with with Composer
+// unfold AHB interface so we can interface with with beethoven
 input [31:0] M_HRDATA,
 input M_HREADY,
 input M_HRESP,

@@ -1,10 +1,10 @@
 package chipkit
 
 import chipsalliance.rocketchip.config.{Config, Parameters}
-import composer.Platforms.ASIC.{MemoryCompiler, TechLib}
-import composer.Platforms.PlatformType.PlatformType
-import composer.Platforms._
-import composer.Protocol.FrontBus.FrontBusProtocol
+import beethoven.Platforms.ASIC.{MemoryCompiler, TechLib}
+import beethoven.Platforms.PlatformType.PlatformType
+import beethoven.Platforms._
+import beethoven.Protocol.FrontBus.FrontBusProtocol
 import os.Path
 
 class ChipKitPlatform(m0generator: Parameters => M0Abstract,
