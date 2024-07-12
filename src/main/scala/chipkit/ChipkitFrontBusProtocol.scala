@@ -4,9 +4,11 @@ import chipsalliance.rocketchip.config.Parameters
 import chisel3.{Bool, Clock, IO, Input, Reset}
 import beethoven.Generation.BeethovenBuild
 import beethoven.Protocol.FrontBus.FrontBusProtocol
+import beethoven.Protocol.RoCC.Helpers.FrontBusHub
+import beethoven.Protocol.RoCC.RoccClientNode
 import freechips.rocketchip.amba.ahb.AHBToTL
 import freechips.rocketchip.diplomacy.LazyModule
-import freechips.rocketchip.tilelink.TLIdentityNode
+import freechips.rocketchip.tilelink.{TLIdentityNode, TLNode}
 import protocol.COMMTopIO
 
 class ChipkitFrontBusProtocol(generator: Parameters => M0Abstract) extends FrontBusProtocol {
@@ -35,7 +37,7 @@ class ChipkitFrontBusProtocol(generator: Parameters => M0Abstract) extends Front
    * The second parameter is the TLIdentityNode that communicates commands to the accelerator system
    * The third parameter is an optional TLIdentityNode that communicates commands to the DMA system (optional)
    */
-  override def deriveTLSources(implicit p: Parameters): (Any, TLIdentityNode, Option[TLIdentityNode]) = {
+  override def deriveTLSources(implicit p:Parameters) : (Any, RoccClientNode, Option[TLNode]) = {
     // top-level ChipKit COMM module
     val chipKitCOMM = LazyModule(new LazyComm)
     // select the slave: sram or dram
@@ -47,8 +49,9 @@ class ChipkitFrontBusProtocol(generator: Parameters => M0Abstract) extends Front
     val tl_dma = TLIdentityNode()
     tl_dma := select.out_dma
 
-    val tl_node = TLIdentityNode()
-    tl_node := AHBToTL() := m0.node
-    ((m0, chipKitCOMM, select), tl_node, Some(tl_dma))
+    val front_hub = LazyModule(new FrontBusHub())
+    front_hub.tl_in := AHBToTL() := m0.node
+
+    ((m0, chipKitCOMM, select), front_hub.rocc_out, Some(tl_dma))
   }
 }

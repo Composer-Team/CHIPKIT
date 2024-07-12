@@ -1,10 +1,10 @@
 package chipkit
 
 import beethoven.Platforms.PlatformType.PlatformType
-import beethoven.Platforms.{Platform, PlatformType}
+import beethoven.Platforms.{DeviceConfig, PhysicalInterface, PhysicalMemoryInterface, Platform, PlatformType}
 import beethoven.Protocol.FrontBus.{AXIFrontBusProtocol, FrontBusProtocol}
 
-class SimPlatform(override val clockRateMHz: Int) extends Platform {
+class SimPlatform(override val clockRateMHz: Int, memoryBusWidthBytes: Int = 4) extends Platform {
   override val platformType: PlatformType = PlatformType.FPGA
   override val hasDiscreteMemory: Boolean = true
   /**
@@ -18,7 +18,7 @@ class SimPlatform(override val clockRateMHz: Int) extends Platform {
   override val frontBusAddressMask: Long = 0xFFFF
   override val frontBusBeatBytes: Int = 4
   override val frontBusCanDriveMemory: Boolean = false
-  override val frontBusProtocol: FrontBusProtocol = new AXIFrontBusProtocol
+  override val frontBusProtocol: FrontBusProtocol = new AXIFrontBusProtocol(false)
   /**
    * These parameters describe the main memory access channel. Of note, the physical address space can
    * be smaller than the addressable space. This is the case, for instance, when certain parts of the
@@ -31,5 +31,8 @@ class SimPlatform(override val clockRateMHz: Int) extends Platform {
   override val memorySpaceSizeBytes: Long = 1L << 32
   override val memoryNChannels: Int = 1
   override val memoryControllerIDBits: Int = 4
-  override val memoryControllerBeatBytes: Int = 4
+  override val memoryControllerBeatBytes: Int = memoryBusWidthBytes
+  override val physicalDevices: List[DeviceConfig] = List(DeviceConfig(0, "root"))
+  override val physicalInterfaces: List[PhysicalInterface] = List(PhysicalMemoryInterface(0, 0))
+  override val physicalConnectivity: List[(Int, Int)] = List.empty
 }

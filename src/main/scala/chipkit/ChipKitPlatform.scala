@@ -1,10 +1,10 @@
 package chipkit
 
-import chipsalliance.rocketchip.config.{Config, Parameters}
 import beethoven.Platforms.ASIC.{MemoryCompiler, TechLib}
 import beethoven.Platforms.PlatformType.PlatformType
 import beethoven.Platforms._
 import beethoven.Protocol.FrontBus.FrontBusProtocol
+import chipsalliance.rocketchip.config._
 import os.Path
 
 class ChipKitPlatform(m0generator: Parameters => M0Abstract,
@@ -29,5 +29,14 @@ class ChipKitPlatform(m0generator: Parameters => M0Abstract,
   override val defaultWriteTXConcurrency: Int = 1
   override val prefetchSourceMultiplicity: Int = 4
 
-  override def postProcessorMacro(c: Config, paths: Seq[Path]): Unit = technologyLibrary.postProcessorMacro(c, paths)
+  // turn off linter
+  override def postProcessorMacro(c: Config, paths: Seq[Path]): Unit = {
+    technologyLibrary.postProcessorMacro(c, paths)
+  }
+
+//  override def postProcessorMacro(c: Config, paths: Seq[Path]): Unit = technologyLibrary.postProcessorMacro(c, paths)
+
+  override val physicalDevices: List[DeviceConfig] = List(DeviceConfig(0, "root"))
+  override val physicalInterfaces: List[PhysicalInterface] = List(PhysicalMemoryInterface(0, 0), PhysicalHostInterface(0))
+  override val physicalConnectivity: List[(Int, Int)] = List.empty
 }
