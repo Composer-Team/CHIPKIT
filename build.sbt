@@ -14,7 +14,6 @@ lazy val chipkit = (project in file("."))
     name := "chipkit",
     libraryDependencies ++= Seq(
       "edu.berkeley.cs" %% "chisel3" % chiselVersion,
-      "edu.duke.cs.apex" %% "rocketchip-rocketchip-fork" % "0.1.14",
       "edu.duke.cs.apex" %% "beethoven-hardware" % "beta.0.0.2"
     ),
     resolvers += ("reposilite-repository-releases" at "http://oak:8080/releases").withAllowInsecureProtocol(true),
