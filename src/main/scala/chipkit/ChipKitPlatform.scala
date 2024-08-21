@@ -8,7 +8,7 @@ import chipsalliance.rocketchip.config._
 import os.Path
 
 class ChipKitPlatform(m0generator: Parameters => M0Abstract,
-                      val technologyLibrary: TechLib,
+                      val techLib: TechLib,
                       override val clockRateMHz: Int) extends Platform with HasPostProccessorScript with HasMemoryCompiler {
   override val platformType: PlatformType = PlatformType.ASIC
   override val hasDiscreteMemory: Boolean = true
@@ -24,14 +24,14 @@ class ChipKitPlatform(m0generator: Parameters => M0Abstract,
   override val memoryNChannels: Int = 1
   override val memoryControllerIDBits: Int = 4
   override val memoryControllerBeatBytes: Int = 4
-  override val memoryCompiler: MemoryCompiler = technologyLibrary.memoryCompiler
+  override val memoryCompiler: MemoryCompiler = techLib.memoryCompiler
   override val defaultReadTXConcurrency: Int = 1
   override val defaultWriteTXConcurrency: Int = 1
   override val prefetchSourceMultiplicity: Int = 4
 
   // turn off linter
   override def postProcessorMacro(c: Config, paths: Seq[Path]): Unit = {
-    technologyLibrary.postProcessorMacro(c, paths)
+    techLib.postProcessorMacro(c, paths)
   }
 
 //  override def postProcessorMacro(c: Config, paths: Seq[Path]): Unit = technologyLibrary.postProcessorMacro(c, paths)
