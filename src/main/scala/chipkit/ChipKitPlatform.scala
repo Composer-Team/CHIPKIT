@@ -9,7 +9,7 @@ import os.Path
 
 class ChipKitPlatform(m0generator: Parameters => M0Abstract,
                       val techLib: TechLib,
-                      override val clockRateMHz: Int) extends Platform with HasPostProccessorScript with HasMemoryCompiler {
+                      override val clockRateMHz: Int) extends Platform with HasPostProccessorScript with HasMemoryCompiler with HasTechLib {
   override val platformType: PlatformType = PlatformType.ASIC
   override val hasDiscreteMemory: Boolean = true
   override val frontBusBaseAddress: Long = 0x2000FC00L
